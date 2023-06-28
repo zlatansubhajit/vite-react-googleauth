@@ -3,16 +3,17 @@ import {Routes, Route, Link, Outlet } from 'react-router-dom';
 import './App.css'
 import Protected from './utils/protected';
 import LoginPage from './pages/LoginPage';
-import AboutPage from './pages/AboutPage';
+//import AboutPage from './pages/AboutPage';
 import Navbar from './components/Navbar';
 import { HomePage } from './pages/HomePage';
-import { ManageMembers } from './pages/ManageMembers';
+//import { ManageMembers } from './pages/ManageMembers';
 
 export const userContext = createContext<any>(null);
 function App() {
   const [user, setUser] = useState<any>(null);
   //const HomePage = React.lazy(() => import("./pages/HomePage"))
-  //const AboutPage = React.lazy(() => import("./AboutPage"))
+  const AboutPage = React.lazy(() => import("./pages/AboutPage").then(({default: AboutPage}) => ({default: AboutPage})));
+  const ManageMembers = React.lazy(() => import("./pages/ManageMembers").then(({default: ManageMembers}) => ({default: ManageMembers})));
 
  const isLoggedIn = (loginData:any) => {
     console.log(loginData);

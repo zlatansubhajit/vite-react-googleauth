@@ -3,7 +3,7 @@ function AboutPage(){
     return(
         <div>
             <h1>Welcome to About Page</h1>
-            <Link className="btn btn-primary"  to="/">Go Back Home</Link>
+            <Link className="btn btn-primary"  to="/home">Go Back Home</Link>
         </div>
     )
 }
