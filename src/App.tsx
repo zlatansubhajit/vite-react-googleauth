@@ -1,17 +1,20 @@
 import React, { createContext, useContext, useState } from 'react';
-import {Routes, Route, Link } from 'react-router-dom';
+import {Routes, Route, Link, Outlet } from 'react-router-dom';
 import './App.css'
-import Protected from './protected';
-import LoginPage from './LoginPage';
-import AboutPage from './AboutPage';
+import Protected from './utils/protected';
+import LoginPage from './pages/LoginPage';
+import AboutPage from './pages/AboutPage';
+import Navbar from './components/Navbar';
+import { HomePage } from './pages/HomePage';
+import { ManageMembers } from './pages/ManageMembers';
 
 export const userContext = createContext<any>(null);
 function App() {
   const [user, setUser] = useState<any>(null);
-  //const HomePage = React.lazy(() => import("./HomePage"));
-  //const AboutPage = React.lazy(() => import("./AboutPage"));
+  //const HomePage = React.lazy(() => import("./pages/HomePage"))
+  //const AboutPage = React.lazy(() => import("./AboutPage"))
 
-  const isLoggedIn = (loginData:any) => {
+ const isLoggedIn = (loginData:any) => {
     console.log(loginData);
     console.log(!!loginData);
     return !!loginData;
@@ -19,18 +22,18 @@ function App() {
 
   return (
     <>
+    <userContext.Provider value={{user, setUser}}>
+    <Navbar/>
     <Routes>
       <Route
-        index
+        path='/'
         element={
           <React.Suspense fallback={<>...</>}>
-            <userContext.Provider value={{user, setUser}}>
             <LoginPage />
-            </userContext.Provider>
           </React.Suspense>
         }
       ></Route>
-      <Route path="about" element={
+      <Route path="/about" element={
          <React.Suspense fallback={<>...</>}>
         <Protected isSignedIn={isLoggedIn(user?.email)}>
         <AboutPage />
@@ -38,8 +41,26 @@ function App() {
         </React.Suspense>
         }
       ></Route>
+      <Route path="/home" element={
+         <React.Suspense fallback={<>...</>}>
+        <Protected isSignedIn={isLoggedIn(user?.email)}>
+        <HomePage />
+        </Protected>
+        </React.Suspense>
+        }
+      ></Route>
+      <Route path="/member" element={
+         <React.Suspense fallback={<>...</>}>
+        <Protected isSignedIn={isLoggedIn(user?.email)}>
+        <ManageMembers />
+        </Protected>
+        </React.Suspense>
+        }
+      ></Route>
       <Route path="*" element={<div>Hey</div>} ></Route>
     </Routes>
+    </userContext.Provider>
+
     </>
   )
 }
