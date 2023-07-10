@@ -1,9 +1,15 @@
-import { Flex, Box, Heading, Spacer, ButtonGroup, Button, Wrap, Avatar, WrapItem } from '@chakra-ui/react'
-import { useContext } from 'react';
-import { userContext } from '../App';
+import { Flex, Box, Heading, Spacer, ButtonGroup, Button, Avatar } from '@chakra-ui/react'
+import useAuth from '../hooks/useAuth';
+import Logout from '../pages/Logout';
+import { useNavigate } from 'react-router';
 
 function Navbar() {
-    const  {user} = useContext(userContext);
+    const {auth} = useAuth()
+    const logout = Logout()
+    const navigate = useNavigate()
+    function handleSignIn(){
+        navigate('/home')
+    }
     return (<div>
         <Flex
             minWidth={'max-content'}
@@ -16,18 +22,18 @@ function Navbar() {
                 <Heading size='md'>Gym Admin App</Heading>
             </Box>
             <Spacer />
-            {!user && 
+            {!auth.user && 
             <ButtonGroup gap='2'>
-                <Button colorScheme='teal'>Sign Up</Button>
-                <Button colorScheme='teal'>Log in</Button>
+                <Button colorScheme='teal' onClick={handleSignIn}>Sign Up</Button>
+                <Button colorScheme='teal' onClick={handleSignIn}>Log in</Button>
             </ButtonGroup>
             }
-            {user && 
-            <Wrap>
-                <WrapItem>
-                    <Avatar name={user?.name} src={user?.picture} />
-                </WrapItem>
-            </Wrap>
+            {auth.user && 
+            <ButtonGroup gap='2'>
+            <Button colorScheme='teal' onClick={logout}>Log Out</Button>
+            <Avatar name={auth.user?.name} src={auth.user?.picture} />
+            </ButtonGroup>
+           
             }
         </Flex>
     </div>)

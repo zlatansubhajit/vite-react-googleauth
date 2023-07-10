@@ -1,67 +1,42 @@
-import React, { createContext, useContext, useState } from 'react';
-import {Routes, Route, Link, Outlet } from 'react-router-dom';
-import './App.css'
-import Protected from './utils/protected';
+import React from 'react';
+import {Routes, Route } from 'react-router-dom';
+import './App.css';
 import LoginPage from './pages/LoginPage';
-//import AboutPage from './pages/AboutPage';
-import Navbar from './components/Navbar';
 import { HomePage } from './pages/HomePage';
-//import { ManageMembers } from './pages/ManageMembers';
+import Layout from './pages/LayoutPage';
+import BasePage from './pages/Basepage';
+import RequireAuth from './RequireAuth';
+//import AboutPage from './pages/AboutPage';
 
-export const userContext = createContext<any>(null);
 function App() {
-  const [user, setUser] = useState<any>(null);
-  //const HomePage = React.lazy(() => import("./pages/HomePage"))
   const AboutPage = React.lazy(() => import("./pages/AboutPage").then(({default: AboutPage}) => ({default: AboutPage})));
   const ManageMembers = React.lazy(() => import("./pages/ManageMembers").then(({default: ManageMembers}) => ({default: ManageMembers})));
 
- const isLoggedIn = (loginData:any) => {
-    console.log(loginData);
-    console.log(!!loginData);
-    return !!loginData;
-  }
-
   return (
     <>
-    <userContext.Provider value={{user, setUser}}>
-    <Navbar/>
     <Routes>
-      <Route
-        path='/'
-        element={
-          <React.Suspense fallback={<>...</>}>
-            <LoginPage />
+      <Route path='/' element={<Layout/>}>
+        {/* Private Routes */}
+        <Route element={<RequireAuth/>}>
+        <Route path='/home' element={<HomePage/>}/>
+        <Route path='/members' element={
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <ManageMembers />
           </React.Suspense>
-        }
-      ></Route>
-      <Route path="/about" element={
-         <React.Suspense fallback={<>...</>}>
-        <Protected isSignedIn={isLoggedIn(user?.email)}>
-        <AboutPage />
-        </Protected>
-        </React.Suspense>
-        }
-      ></Route>
-      <Route path="/home" element={
-         <React.Suspense fallback={<>...</>}>
-        <Protected isSignedIn={isLoggedIn(user?.email)}>
-        <HomePage />
-        </Protected>
-        </React.Suspense>
-        }
-      ></Route>
-      <Route path="/member" element={
-         <React.Suspense fallback={<>...</>}>
-        <Protected isSignedIn={isLoggedIn(user?.email)}>
-        <ManageMembers />
-        </Protected>
-        </React.Suspense>
-        }
-      ></Route>
-      <Route path="*" element={<div>Hey</div>} ></Route>
-    </Routes>
-    </userContext.Provider>
+        }/>
+        <Route path='/about' element={
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <AboutPage />
+          </React.Suspense>
+        }/>
+        </Route>
 
+        {/* Public Routes */}
+        <Route path='/' element={<BasePage/>} />
+        <Route path='/login' element={<LoginPage/>} />
+        
+      </Route>
+    </Routes>
     </>
   )
 }

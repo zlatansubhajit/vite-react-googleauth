@@ -2,17 +2,16 @@ import { Card, CardBody, Container, SimpleGrid,Image, CardFooter,Text, Center} f
 import memberImage from '../assets/members.jpg'
 import rupeeImage from '../assets/rupee.jpg'
 import employeesImage from '../assets/employees.jpg'
-import { useContext } from "react";
-import { userContext } from "../App";
 import { useNavigate } from "react-router";
+import useAuth from "../hooks/useAuth";
 
 export function HomePage() {
 const navigate = useNavigate()
-const {user}  = useContext(userContext)
+const {auth}  = useAuth()
 function handleCardClick(card: string) {
 switch (card) {
-    case 'member':
-        navigate('/member')
+    case 'members':
+        navigate('/members')
         break;
 
     default:
@@ -22,7 +21,7 @@ switch (card) {
 
     return (
         <Container maxW={'container.lg'} >
-            <Center height={'150px'}><Text fontSize={'3xl'}>Welcome {user.name ?? ""} <br /> Choose an option :- </Text></Center>
+            <Center height={'150px'}><Text fontSize={'3xl'}>Welcome {auth.user?.name ?? ""} <br /> Choose an option :- </Text></Center>
             <SimpleGrid spacing={10} templateColumns='repeat(auto-fill, minmax(250px, 1fr))'>
                 <Card align={'center'}
                 variant={'filled'}
@@ -31,7 +30,7 @@ switch (card) {
                     transition: "all 0.25s ease-in-out",
                     filter: "brightness(120%)"
                 }}
-                onClick={() => handleCardClick("member")}
+                onClick={() => handleCardClick("members")}
                 >
                     <CardBody>
                         <Image src={memberImage} alt="image for member management"
