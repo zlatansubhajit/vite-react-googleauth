@@ -1,8 +1,10 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Card, CardBody, CardHeader, Center, Container, Flex, FormControl, FormLabel, GridItem, HStack, Heading, IconButton, Input, InputGroup, InputRightElement, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, SimpleGrid, Skeleton, Stack, StackDivider,Text, Tooltip, useBreakpointValue } from "@chakra-ui/react";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Card, CardBody, CardHeader, Center, Container, Flex, FormControl, FormLabel, GridItem, HStack, Heading, IconButton, Input, InputGroup, InputRightElement, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, SimpleGrid, Skeleton, Spacer, Stack, StackDivider,Text, Tooltip, useBreakpointValue } from "@chakra-ui/react";
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from "react";
 import ErrorPage from "./ErrorPage";
-import { AddIcon, MinusIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon, MinusIcon, ViewIcon, ViewOffIcon, Icon } from "@chakra-ui/icons";
+import { BsFilter } from 'react-icons/bs'
+import GenericCard from "../components/GenericCard";
 
 
 
@@ -13,12 +15,21 @@ export default function ManageMembers() {
   const[error, setError] = useState<any>(null)
   const [isLoading, setLoading] = useState(true)
   const[editMode, setEditMode] = useState(false)
+  const[filterMode, setFilterMode] = useState(false)
   //const[memberForm, setMemberForm] = useState<any>()
   const memberData = useRef({
-    fullName: "",
-    email:"",
-    phone: "",
-    gym: ""
+    name: "",
+    phone: 0,
+    email: "",
+    address: "",
+    gymName: "",
+    activeSubscription: {
+      subStart: "2023-07-22",
+      subEnd: "2023-07-22",
+      paidAmount: 0,
+      dueAmount: 0,
+      ptTrainer: ""
+    }
   })
   const memberFormRef = useRef<any>(null)
   const paymentData = useRef({
@@ -44,82 +55,113 @@ export default function ManageMembers() {
     setEditMode(!editMode);
   }
 
-  function handleMemberChange(e: React.ChangeEvent<HTMLInputElement>){
+  function handleMemberChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>){
     //console.log(e.target.id)
     //console.log(e.target.value)
     switch (e.target.id) {
       case 'fullName':
-        memberData.current.fullName = e.target.value
+        memberData.current.name = e.target.value
         break;
       case 'gym':
-        memberData.current.gym = e.target.value  
+        memberData.current.gymName = e.target.value  
         break;
       case 'email':
         memberData.current.email = e.target.value
         break;
       case 'phone':
-        memberData.current.phone = e.target.value  
+        memberData.current.phone = Number(e.target.value)
         break;
-    }
-  }
-  function handlePaymentChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>){
-    //console.log(e.target.id)
-    //console.log(e.target.value)
-    switch (e.target.id) {
-      case 'paymentDate':
-        paymentData.current.date = e.target.value
+      case 'subStart':
+        memberData.current.activeSubscription.subStart = e.target.value
         break;
-      case 'amount':
-        paymentData.current.amount = e.target.value  
+      case 'subEnd':
+        memberData.current.activeSubscription.subEnd =  e.target.value  
         break;
-      case 'recBy':
-        paymentData.current.receivedBy = e.target.value
+      case 'dueAmount':
+        memberData.current.activeSubscription.dueAmount = Number(e.target.value)
         break;
-      case 'recFrom':
-        paymentData.current.receivedFrom = e.target.value  
-        break;
-      case 'payMethod':
-        paymentData.current.payMethod = e.target.value
-        break;
-      case 'payFor':
-        paymentData.current.payFor = e.target.value  
+      case 'ptTrainer':
+        memberData.current.activeSubscription.ptTrainer = e.target.value  
         break;  
     }
   }
-  function handleSubsChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>){
-    //console.log(e.target.id)
-    //console.log(e.target.value)
-    switch (e.target.id) {
-      case 'subStart':
-        subscriptionData.current.subStart = e.target.value
-        break;
-      case 'subEnd':
-        subscriptionData.current.subEnd = e.target.value  
-        break;
-      case 'dueAmount':
-        subscriptionData.current.due = e.target.value
-        break;
-      case 'ptTrainer':
-        subscriptionData.current.ptTrainer = e.target.value  
-        break;
-    }
-  }
+  // function handlePaymentChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>){
+  //   //console.log(e.target.id)
+  //   //console.log(e.target.value)
+  //   switch (e.target.id) {
+  //     case 'paymentDate':
+  //       paymentData.current.date = e.target.value
+  //       break;
+  //     case 'amount':
+  //       paymentData.current.amount = e.target.value  
+  //       break;
+  //     case 'recBy':
+  //       paymentData.current.receivedBy = e.target.value
+  //       break;
+  //     case 'recFrom':
+  //       paymentData.current.receivedFrom = e.target.value  
+  //       break;
+  //     case 'payMethod':
+  //       paymentData.current.payMethod = e.target.value
+  //       break;
+  //     case 'payFor':
+  //       paymentData.current.payFor = e.target.value  
+  //       break;  
+  //   }
+  // }
+  // function handleSubsChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>){
+  //   //console.log(e.target.id)
+  //   //console.log(e.target.value)
+  //   switch (e.target.id) {
+  //     case 'subStart':
+  //       subscriptionData.current.subStart = e.target.value
+  //       break;
+  //     case 'subEnd':
+  //       subscriptionData.current.subEnd = e.target.value  
+  //       break;
+  //     case 'dueAmount':
+  //       subscriptionData.current.due = e.target.value
+  //       break;
+  //     case 'ptTrainer':
+  //       subscriptionData.current.ptTrainer = e.target.value  
+  //       break;
+  //   }
+  // }
 
-  function handleMemberSubmit(e: React.MouseEvent<HTMLElement>){
+  async function handleMemberSubmit(e: React.MouseEvent<HTMLElement>){
     e.preventDefault()
-    paymentData.current.gym = memberData.current.gym
-    paymentData.current.ptTrainer = subscriptionData.current.ptTrainer
+    setLoading(true)
+    //paymentData.current.gym = memberData.current.gymName
+    //paymentData.current.ptTrainer = memberData.current.activeSubscription.ptTrainer
     console.log(memberData.current)
-    console.log(paymentData.current)
-    console.log(subscriptionData.current)
+    //console.log(paymentData.current)
+    //console.log(subscriptionData.current)
+
+    const response = await fetch(`https://localhost:7249/members`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(memberData.current)
+    })
+    console.log(response.json())
+    fetchMemberData()
   }
 
   function resetForm(){
     memberData.current = {
-      fullName: "",
-      email:"",
-      phone: "",
-      gym: ""
+      name: "",
+      phone: 0,
+      email: "",
+      address: "",
+      gymName: "",
+      activeSubscription: {
+        subStart: "2023-07-22",
+        subEnd: "2023-07-22",
+        paidAmount: 0,
+        dueAmount: 0,
+        ptTrainer: ""
+      }
     }
     paymentData.current = {
       date: "",
@@ -141,9 +183,8 @@ export default function ManageMembers() {
     paymentFormRef?.current?.reset()
     subsFormRef?.current?.reset()
   }
-  
 
-   useEffect(() => {
+  async function fetchMemberData(){
     fetch(`https://localhost:7249/members`)
       .then((response) => {
         if (!response.ok) {
@@ -162,6 +203,11 @@ export default function ManageMembers() {
         setError(err)
       })
       .finally(() => setLoading(false));
+  }
+  
+
+   useEffect(() => {
+    fetchMemberData()
   }, []);
   
 
@@ -174,33 +220,29 @@ export default function ManageMembers() {
   if(error) return(<ErrorPage/>)
     return(
         <Container maxW={'container.lg'}>
-<HStack>
-<Breadcrumb p={2}>
+<Flex alignItems={'center'} m={1}>
+<Breadcrumb px={3}>
   <BreadcrumbItem>
     <BreadcrumbLink as={Link} to={'/home'}>
       Home
-    </BreadcrumbLink>
-  </BreadcrumbItem>
-  <BreadcrumbItem>
-    <BreadcrumbLink as={Link} to={'/about'}>
-      About
     </BreadcrumbLink>
   </BreadcrumbItem>
   <BreadcrumbItem isCurrentPage>
     <BreadcrumbLink>Member Management</BreadcrumbLink>
   </BreadcrumbItem>
 </Breadcrumb>
-<Tooltip hasArrow label="Add Member Details">
-<IconButton aria-label='Add Member Details' icon={<AddIcon />} size={'xs'} onClick={toggleEditMode}/>
+<Tooltip hasArrow label={editMode? 'Collapse Member Form':'Add Member Details'}>
+<IconButton aria-label={editMode? 'Collapse Member Form':'Add Member Details'} icon={editMode? <CloseIcon />: <AddIcon />} size={'xs'} onClick={toggleEditMode}/>
 </Tooltip>
-</HStack>
+<Spacer />
+<Button rightIcon={<Icon as={BsFilter}/>} onClick={() => setFilterMode(!filterMode)}>Filter</Button>
+</Flex>
 
 {/* Member form collapse */}
 {editMode && 
-      <Box
-      bg={'gray.700'}
-          rounded={'lg'}
-          boxShadow={'lg'}
+      <Card
+          variant={'filled'}
+          rounded={'md'}
           p={8}
           m={1}>
           <Stack spacing={4}>
@@ -209,31 +251,31 @@ export default function ManageMembers() {
               <GridItem colSpan={formSpan}>
                 <FormControl id="fullName" isRequired>
                   <FormLabel>Full Name</FormLabel>
-                  <Input type="text" onChange={handleMemberChange}/>
+                  <Input border={"2px solid gray"} type="text" placeholder="Enter Full Name" onChange={handleMemberChange}/>
                 </FormControl>
               </GridItem>
               <GridItem colSpan={formSpan}>
                 <FormControl id="gym" isRequired>
                   <FormLabel>Gym Name</FormLabel>
-                  <Input type="text" onChange={handleMemberChange}/>
+                  <Input border={"2px solid gray"} type="text" placeholder="Enter Gym Name" onChange={handleMemberChange}/>
                 </FormControl>
               </GridItem>
               <GridItem colSpan={formSpan}>
             <FormControl id="email" isRequired>
               <FormLabel>Email address</FormLabel>
-              <Input type="email" onChange={handleMemberChange}/>
+              <Input border={"2px solid gray"} type="email" placeholder="Enter Email ID" onChange={handleMemberChange}/>
             </FormControl>
             </GridItem>
             <GridItem colSpan={formSpan}>
             <FormControl id="phone" isRequired>
               <FormLabel>phone</FormLabel>
-                <Input type="text" onChange={handleMemberChange}/>
+                <Input border={"2px solid gray"} type="text" placeholder="Enter Phone Number" onChange={handleMemberChange}/>
             </FormControl>
             </GridItem>
             </SimpleGrid>
             </form>
             {/* optional subscription and payments accordions*/}
-            <Accordion allowMultiple>
+            {/* <Accordion allowMultiple>
             <AccordionItem>
                 {({ isExpanded }) => (
                   <>
@@ -255,20 +297,20 @@ export default function ManageMembers() {
                           <GridItem colSpan={formSpan}>
                             <FormControl id="subStart" >
                               <FormLabel>Subscription Start</FormLabel>
-                              <Input type="datetime-local" onChange={handleSubsChange}/>
+                              <Input type="date" onChange={handleMemberChange}/>
                             </FormControl>
                           </GridItem>
                           <GridItem colSpan={formSpan}>
                             <FormControl id="subEnd" >
                               <FormLabel>Subscription End</FormLabel>
-                              <Input type="datetime-local" onChange={handleSubsChange}/>
+                              <Input type="date" onChange={handleMemberChange}/>
                             </FormControl>
                           </GridItem>
                           <GridItem colSpan={formSpan}>
                         <FormControl id="dueAmount" >
                           <FormLabel>Due Amount</FormLabel>
                           <NumberInput defaultValue={0} >
-                            <NumberInputField onChange={handleSubsChange}/>
+                            <NumberInputField onChange={handleMemberChange}/>
                             <NumberInputStepper>
                               <NumberIncrementStepper />
                               <NumberDecrementStepper />
@@ -279,7 +321,7 @@ export default function ManageMembers() {
                         <GridItem colSpan={formSpan}>
                         <FormControl id="ptTrainer" >
                           <FormLabel>Pt Trainer</FormLabel>
-                            <Input type="text" onChange={handleSubsChange}/>
+                            <Input type="text" onChange={handleMemberChange}/>
                         </FormControl>
                         </GridItem>
                         </SimpleGrid>
@@ -310,7 +352,7 @@ export default function ManageMembers() {
                           <GridItem colSpan={formSpan}>
                             <FormControl id="paymentDate" >
                               <FormLabel>Payment Date</FormLabel>
-                              <Input type="datetime-local" onChange={handlePaymentChange}/>
+                              <Input type="date" onChange={handlePaymentChange}/>
                             </FormControl>
                           </GridItem>
                           <GridItem colSpan={formSpan}>
@@ -364,8 +406,78 @@ export default function ManageMembers() {
                   </>
                 )}
               </AccordionItem>
-            </Accordion>
+            </Accordion> */}
             {/* Accordion end*/}
+            <SimpleGrid columnGap={3} rowGap={6}  columns={2} px={4} py={2}>
+            <GridItem colSpan={formSpan}>
+            <Button
+                type="button"
+                loadingText="Resetting"
+                size="lg"
+                colorScheme={'red'}
+                width={'100%'}
+                variant={'outline'}
+                onClick={resetForm}
+                >
+                Reset Form
+              </Button>
+              </GridItem>
+              <GridItem colSpan={formSpan}>
+              <Button
+                type="button"
+                loadingText="Submitting"
+                size="lg"
+                colorScheme={'teal'}
+                width={'100%'}
+                onClick={handleMemberSubmit}
+                >
+                Submit Details
+              </Button>
+              </GridItem>
+              </SimpleGrid>
+          </Stack>
+        </Card>
+}
+{/* member form end */}
+
+{/* filter form collapse */}
+{filterMode && 
+      <Box
+      bg={'gray.700'}
+          rounded={'md'}
+          boxShadow={'lg'}
+          p={8}
+          m={1}>
+          <Stack spacing={4}>
+            <form ref={memberFormRef}>
+            <SimpleGrid columnGap={3} rowGap={6}  columns={2} px={4} py={2}>
+              <GridItem colSpan={formSpan}>
+                <FormControl id="fullNameFilter" isRequired>
+                  <FormLabel>Filter by Name</FormLabel>
+                  <Input type="text" onChange={handleMemberChange}/>
+                </FormControl>
+              </GridItem>
+              <GridItem colSpan={formSpan}>
+                <FormControl id="gymFilter" isRequired>
+                  <FormLabel>Filter by Gym</FormLabel>
+                  <Input type="text" onChange={handleMemberChange}/>
+                </FormControl>
+              </GridItem>
+              <GridItem colSpan={formSpan}>
+            <FormControl id="emailFilter" isRequired>
+              <FormLabel>Filter by Email</FormLabel>
+              <Input type="email" onChange={handleMemberChange}/>
+            </FormControl>
+            </GridItem>
+            <GridItem colSpan={formSpan}>
+            <FormControl id="phoneFilter" isRequired>
+              <FormLabel>Filter by phone</FormLabel>
+                <Input type="text" onChange={handleMemberChange}/>
+            </FormControl>
+            </GridItem>
+            </SimpleGrid>
+            </form>
+            
             <SimpleGrid columnGap={3} rowGap={6}  columns={2} px={4} py={2}>
             <GridItem colSpan={formSpan}>
             <Button
@@ -403,87 +515,16 @@ export default function ManageMembers() {
           </Stack>
         </Box>
 }
-{/* member form end */}
+{/* filter form end */}
 
 { data &&
 
   data.map((x,index)=> {
+    
     return(
-      <Card size={'sm'} key={index}  m={1}>
-<CardHeader>
-<Heading size='md'>{x.name}</Heading>
-</CardHeader>
-
-<CardBody>
-<SimpleGrid columnGap={3} rowGap={6} columns={12}>
-<GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      Gym
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.gymName}
-    </Text>
-  </Box>
-  </GridItem>
-  <GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      Subscription End
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.activeSubscription.subEnd}
-    </Text>
-  </Box>
-  </GridItem>
-  <GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      PT Trainer
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.activeSubscription.ptTrainer}
-    </Text>
-  </Box>
-  </GridItem>
-  <GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      Amount Due
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.activeSubscription.dueAmount}
-    </Text>
-  </Box>
-  </GridItem>
-  <GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      Email
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.email}
-    </Text>
-  </Box>
-  </GridItem>
-  <GridItem colSpan={colSpan}>
-  <Box>
-    <Heading size='xs' textTransform='uppercase'>
-      Phone
-    </Heading>
-    <Text pt='2' fontSize='sm'>
-      {x.phone}
-    </Text>
-  </Box>
-  </GridItem>
-  
-</SimpleGrid>
-</CardBody>
-</Card>
-
-)
-
-    })
+      <GenericCard x={x} key={index} />
+    )
+  })
     
 }
 
